@@ -13,14 +13,22 @@ type Client struct {
 	ServerPort int
 	Name       string
 	conn       net.Conn
-	Status     int // Init 999, exit 0, open chat 1, private chat 2, update name 3.
+	Status     int
 }
+
+const (
+	Exit        = 0
+	OpenChat    = 1
+	PrivateChat = 2
+	UpdateName  = 3
+	Init        = 999
+)
 
 func NewClient(serverIP string, serverPort int) *Client {
 	client := &Client{
 		ServerIP:   serverIP,
 		ServerPort: serverPort,
-		Status:     999,
+		Status:     Init,
 	}
 	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", serverIP, serverPort))
 	if err != nil {
@@ -164,23 +172,23 @@ func (thisClient *Client) UpdateName() bool {
 }
 
 func (thisClient *Client) Run() {
-	for thisClient.Status != 0 {
+	for thisClient.Status != Exit {
 		for thisClient.menu() != true {
 
 		}
 		// 根据flag不同，处理不同业务
 		switch thisClient.Status {
-		case 1:
+		case OpenChat:
 			// Open Chat
 			fmt.Println(">>> Open Chat mode")
 			thisClient.OpenChat()
 			break
-		case 2:
+		case PrivateChat:
 			// Private Chat
 			fmt.Println(">>> Private Chat mode")
 			thisClient.PrivateChat()
 			break
-		case 3:
+		case UpdateName:
 			// update name
 			fmt.Println(">>> update name")
 			thisClient.UpdateName()
