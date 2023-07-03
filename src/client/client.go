@@ -63,23 +63,23 @@ func (thisClient *Client) menu() bool {
 
 }
 
-func (thisClient *Client) DealResponse() int {
+func (thisClient *Client) dealResponse() int {
 	_, err := io.Copy(os.Stdout, thisClient.conn)
 	if err != nil {
-		fmt.Println("Client.DealResponse io.Copy error, ", err)
+		fmt.Println("Client.dealResponse io.Copy error, ", err)
 		thisClient.conn.Close()
 		return 1
 	}
 	return 0
 }
 
-func (thisClient *Client) OpenChat() {
+func (thisClient *Client) openChat() {
 	// 提示用户输入消息
 	var chatmsg string
 	fmt.Println(">>>please input your message content >>> Open")
 	_, err := fmt.Scanln(&chatmsg)
 	if err != nil {
-		fmt.Println("Client.OpenChat ScanLn error, ", err)
+		fmt.Println("Client.openChat ScanLn error, ", err)
 		return
 	}
 
@@ -90,7 +90,7 @@ func (thisClient *Client) OpenChat() {
 			chatmsg += "\n"
 			_, err := thisClient.conn.Write([]byte(chatmsg))
 			if err != nil {
-				fmt.Println("from Client.OpenChat() in client.go, error : ", err)
+				fmt.Println("from Client.openChat() in client.go, error : ", err)
 				break
 			}
 		}
@@ -100,27 +100,27 @@ func (thisClient *Client) OpenChat() {
 		fmt.Println(">>>please input your message content >>> Open")
 		_, err := fmt.Scanln(&chatmsg)
 		if err != nil {
-			fmt.Println("Client.OpenChat ScanLn error, ", err)
+			fmt.Println("Client.openChat ScanLn error, ", err)
 			return
 		}
 
 	}
 }
 
-func (thisClient *Client) SelectUser() {
+func (thisClient *Client) selectUser() {
 	sendmsg := "who\n"
 	_, err := thisClient.conn.Write([]byte(sendmsg))
 	if err != nil {
-		fmt.Println("from Client.SelectUser() in client.go, error : ", err)
+		fmt.Println("from Client.selectUser() in client.go, error : ", err)
 		return
 	}
 }
 
-func (thisClient *Client) PrivateChat() {
+func (thisClient *Client) privateChat() {
 	var remoteName string
 	var chatmsg string
 
-	thisClient.SelectUser()
+	thisClient.selectUser()
 	fmt.Println("please input who you want to chat with :")
 	fmt.Scanln(&remoteName)
 
@@ -134,7 +134,7 @@ func (thisClient *Client) PrivateChat() {
 
 				_, err := thisClient.conn.Write([]byte(sendmsg))
 				if err != nil {
-					fmt.Println("from Client.OpenChat() in client.go, error : ", err)
+					fmt.Println("from Client.openChat() in client.go, error : ", err)
 					break
 				}
 
@@ -146,7 +146,7 @@ func (thisClient *Client) PrivateChat() {
 			fmt.Scanln(&chatmsg)
 		}
 
-		thisClient.SelectUser()
+		thisClient.selectUser()
 		fmt.Println("please input who you want to chat with :")
 		fmt.Scanln(&remoteName)
 
@@ -154,7 +154,7 @@ func (thisClient *Client) PrivateChat() {
 
 }
 
-func (thisClient *Client) UpdateName() bool {
+func (thisClient *Client) updateName() bool {
 	fmt.Println(">>>please input your new name")
 
 	fmt.Scanln(&thisClient.Name)
@@ -163,7 +163,7 @@ func (thisClient *Client) UpdateName() bool {
 
 	_, err := thisClient.conn.Write([]byte(updnmsg))
 	if err != nil {
-		fmt.Println("from Client.UpdateName() in client.go, error : ", err)
+		fmt.Println("from Client.updateName() in client.go, error : ", err)
 		return false
 	}
 
@@ -171,7 +171,7 @@ func (thisClient *Client) UpdateName() bool {
 
 }
 
-func (thisClient *Client) Run() {
+func (thisClient *Client) run() {
 	for thisClient.Status != Exit {
 		for thisClient.menu() != true {
 
@@ -181,17 +181,17 @@ func (thisClient *Client) Run() {
 		case OpenChat:
 			// Open Chat
 			fmt.Println(">>> Open Chat mode")
-			thisClient.OpenChat()
+			thisClient.openChat()
 			break
 		case PrivateChat:
 			// Private Chat
 			fmt.Println(">>> Private Chat mode")
-			thisClient.PrivateChat()
+			thisClient.privateChat()
 			break
 		case UpdateName:
 			// update name
 			fmt.Println(">>> update name")
-			thisClient.UpdateName()
+			thisClient.updateName()
 			break
 		}
 	}
@@ -210,13 +210,13 @@ func main() {
 	fmt.Println(">>>>>client connect server success")
 
 	// 启动客户端业务
-	go client.Run()
+	go client.run()
 	for {
-		if client.DealResponse() == 1 {
+		if client.dealResponse() == 1 {
 			return
 		}
 	}
 
-	/*go client.DealResponse()
-	client.Run()*/
+	/*go client.dealResponse()
+	client.run()*/
 }
